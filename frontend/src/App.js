@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -6,22 +6,26 @@ import Dashboard from './pages/Dashboard';
 import Users from './pages/Users';
 import Games from './pages/Games';
 import Tickets from './pages/Tickets';
-import Leaderboard from './pages/Leaderboard';
-import Rewards from './pages/Rewards';
-import Analytics from './pages/Analytics';
-import Locations from './pages/Locations';
-import TimeSlots from './pages/TimeSlots';
-import Landing from './pages/Landing';
+import Register from './pages/Register';
+import Login from './pages/Login';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showRegister, setShowRegister] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) setIsLoggedIn(true);
+  }, []);
 
   const handleLogin = () => {
     setIsLoggedIn(true);
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('admin');
     setIsLoggedIn(false);
     setSidebarOpen(false);
   };
@@ -35,7 +39,11 @@ function App() {
   };
 
   if (!isLoggedIn) {
-    return <Landing onLogin={handleLogin} />;
+    return showRegister ? (
+      <Register onSuccess={handleLogin} />
+    ) : (
+      <Login onSuccess={handleLogin} onSwitchToRegister={() => setShowRegister(true)} />
+    );
   }
 
   return (
