@@ -67,7 +67,7 @@ const Register = ({ onSuccess }) => {
     
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/register', {
+      const res = await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/auth/register`, {
         name: formData.name,
         phone: formData.phone,
         password: formData.password
@@ -108,7 +108,7 @@ const Register = ({ onSuccess }) => {
 
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/verify-otp', {
+      const res = await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/auth/verify-otp`, {
         adminId,
         otp: otpString
       });
@@ -125,7 +125,7 @@ const Register = ({ onSuccess }) => {
     if (!canResend) return;
     setLoading(true);
     try {
-      await axios.post('http://localhost:5000/api/auth/resend-otp', { adminId });
+      await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/auth/resend-otp`, { adminId });
       setTimer(60);
       setCanResend(false);
       setOtp(['', '', '', '', '', '']);
