@@ -195,6 +195,7 @@ const Register = ({ onSwitchToLogin }) => {
                     value={formData.phone}
                     onChange={handleChange}
                     placeholder="Your Number"
+                    maxLength="10"
                     className="flex-1 px-4 py-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   />
@@ -258,7 +259,7 @@ const Register = ({ onSwitchToLogin }) => {
             <form onSubmit={handleVerifyOtp}>
               <div className="mb-4">
                 <label className="text-sm text-gray-600 mb-2 block">Enter OTP</label>
-                <div className="flex gap-2 justify-center mb-4">
+                <div className="flex gap-1.5 sm:gap-2 justify-center mb-4">
                   {otp.map((digit, index) => (
                     <input
                       key={index}
@@ -269,7 +270,7 @@ const Register = ({ onSwitchToLogin }) => {
                       onChange={(e) => handleOtpChange(index, e.target.value)}
                       onPaste={handleOtpPaste}
                       onKeyDown={(e) => handleKeyDown(index, e)}
-                      className="w-14 h-14 text-center text-2xl font-bold border-2 border-blue-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-10 h-10 sm:w-14 sm:h-14 text-center text-xl sm:text-2xl font-bold border-2 border-blue-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   ))}
                 </div>
