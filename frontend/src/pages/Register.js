@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const Register = ({ onSuccess }) => {
+const Register = ({ onSwitchToLogin }) => {
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({ name: '', phone: '', password: '', confirmPassword: '', countryCode: '+91' });
+  const [formData, setFormData] = useState({ username: '', phone: '', password: '', confirmPassword: '', countryCode: '+91' });
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [adminId, setAdminId] = useState('');
   const [error, setError] = useState('');
@@ -68,7 +68,7 @@ const Register = ({ onSuccess }) => {
     setLoading(true);
     try {
       const res = await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/auth/register`, {
-        name: formData.name,
+        username: formData.username,
         phone: formData.phone,
         password: formData.password
       });
@@ -108,13 +108,12 @@ const Register = ({ onSuccess }) => {
 
     setLoading(true);
     try {
-      const res = await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/auth/verify-otp`, {
+      await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/auth/verify-otp`, {
         adminId,
         otp: otpString
       });
-      localStorage.setItem('token', res.data.token);
-      localStorage.setItem('admin', JSON.stringify(res.data.admin));
-      onSuccess();
+      alert('Registration successful! Please login with your credentials.');
+      onSwitchToLogin();
     } catch (err) {
       setError(err.response?.data?.message || 'OTP verification failed');
     }
@@ -146,6 +145,12 @@ const Register = ({ onSuccess }) => {
 
       <div className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md relative z-10">
         <div className="flex justify-between items-center mb-8">
+          <button
+            onClick={onSwitchToLogin}
+            className="px-6 py-2 bg-white border-2 border-blue-600 text-blue-600 rounded-full font-semibold hover:bg-blue-50 transition"
+          >
+            Login
+          </button>
           <h2 className="text-3xl font-bold text-gray-800">
             {step === 1 ? 'Skip the wait.' : 'Verify OTP'}
           </h2>
@@ -158,13 +163,13 @@ const Register = ({ onSuccess }) => {
 
             <form onSubmit={handleRegister}>
               <div className="mb-4">
-                <label className="text-sm text-gray-600 mb-2 block">Enter your User Name</label>
+                <label className="text-sm text-gray-600 mb-2 block">Enter your Username</label>
                 <input
                   type="text"
-                  name="name"
-                  value={formData.name}
+                  name="username"
+                  value={formData.username}
                   onChange={handleChange}
-                  placeholder="Enter Your Name"
+                  placeholder="Enter Username"
                   className="w-full px-4 py-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 />

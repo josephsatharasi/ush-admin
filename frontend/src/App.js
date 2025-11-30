@@ -11,7 +11,7 @@ import Login from './pages/Login';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showRegister, setShowRegister] = useState(true);
+  const [showRegister, setShowRegister] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -40,7 +40,7 @@ function App() {
 
   if (!isLoggedIn) {
     return showRegister ? (
-      <Register onSuccess={handleLogin} />
+      <Register onSwitchToLogin={() => setShowRegister(false)} />
     ) : (
       <Login onSuccess={handleLogin} onSwitchToRegister={() => setShowRegister(true)} />
     );

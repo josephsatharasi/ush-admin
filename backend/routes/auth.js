@@ -6,17 +6,17 @@ const router = express.Router();
 
 router.post('/register', async (req, res) => {
   try {
-    const { name, phone, password } = req.body;
+    const { username, phone, password } = req.body;
     
-    let admin = await Admin.findOne({ phone });
+    let admin = await Admin.findOne({ $or: [{ phone }, { username }] });
     if (admin) {
-      await Admin.deleteOne({ phone });
+      await Admin.deleteOne({ _id: admin._id });
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const otpExpiry = new Date(Date.now() + parseInt(process.env.OTP_EXPIRY));
 
-    admin = new Admin({ name, phone, password, otp, otpExpiry });
+    admin = new Admin({ username, phone, password, otp, otpExpiry });
     await admin.save();
 
     await sendOTP(phone, otp);
@@ -51,7 +51,7 @@ router.post('/verify-otp', async (req, res) => {
 
     const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
     
-    res.json({ token, admin: { id: admin._id, name: admin.name, phone: admin.phone } });
+    res.json({ token, admin: { id: admin._id, username: admin.username, phone: admin.phone } });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -59,9 +59,9 @@ router.post('/verify-otp', async (req, res) => {
 
 router.post('/login', async (req, res) => {
   try {
-    const { phone, password } = req.body;
+    const { username, password } = req.body;
     
-    const admin = await Admin.findOne({ phone });
+    const admin = await Admin.findOne({ username });
     if (!admin) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
@@ -71,17 +71,9 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpiry = new Date(Date.now() + parseInt(process.env.OTP_EXPIRY));
-
-    admin.otp = otp;
-    admin.otpExpiry = otpExpiry;
-    await admin.save();
-
-    await sendOTP(phone, otp);
-    console.log(`OTP sent to ${phone}: ${otp}`);
+    const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
     
-    res.json({ message: 'OTP sent', adminId: admin._id });
+    res.json({ token, admin: { id: admin._id, username: admin.username, phone: admin.phone } });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
